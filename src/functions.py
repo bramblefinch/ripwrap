@@ -6,7 +6,7 @@ from PIL import Image
 from pytesseract import image_to_data, Output
 
 
-target_data = ["page_num", "block_num", "par_num", "line_num", "word_num", "text"]
+target_data = ["page_num", "block_num", "par_num", "line_num", "word_num", "text", "conf"]
 
 def rip(filename: str):
     tess_dict = image_to_data(image=Image.open(f"{filename}"), config='--psm 3', output_type=Output.DICT,)
@@ -17,7 +17,8 @@ def rip(filename: str):
     line_num = stripped["line_num"]
     word_num = stripped["word_num"]
     text = stripped["text"]
-    inlined = list(zip(page_num, block_num, par_num, line_num, word_num, text))
+    conf = stripped["conf"]
+    inlined = list(zip(page_num, block_num, par_num, line_num, word_num, text, conf))
     table = Table(title="Rip")
     collapsed = []
     for item in inlined:
@@ -27,9 +28,15 @@ def rip(filename: str):
             collapsed.append(item)
     for item in target_data:
         table.add_column(item)
+    stringified = ""
     for item in collapsed:
-        renderable = (str(item[0]), str(item[1]), str(item[2]), str(item[3]), str(item[4]), item[5])
+        renderable = (str(item[0]), str(item[1]), str(item[2]), str(item[3]), str(item[4]), item[5], str(item[6]))
         table.add_row(*renderable)
-    console = Console()
-    console.print(table)
+        if item[2] == 0:
+            stringified += "\n"
+        else:
+            stringified += f" {item[5]}"
     
+    #console = Console()
+    #console.print(table)
+    print(stringified)
