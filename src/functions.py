@@ -36,7 +36,7 @@ def rip(filename: str):
             stringified += "\n"
         else:
             stringified += f" {item[5]}"
+    return stringified
     
     #console = Console()
     #console.print(table)
-    print(stringified)
